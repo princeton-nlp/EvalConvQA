@@ -42,23 +42,14 @@ def resolve_coreference(text = ""):
     return replaced_text
 
 def is_entity(word):
-    # print("Word:",word)
+
     tokens = word.split()
     tokens = [t for t in tokens if (t not in ARTICLES)]
-    # print("Tokens:",tokens)
     is_entity = True if all([t[0].isupper() for t in tokens]) else False
     return is_entity
 
 def find_coreference_f1s(text1="", text2="", skip_entity=True):
 
-    # print("***")
-    # print(text1)
-    # print(text2)
-
-    def remove_punc(text):
-        exclude = set(string.punctuation)
-        return ''.join(ch for ch in text if ch not in exclude)
-    # exclude = set(string.punctuation)
     result_dict1 = predictor.predict(document=text1)
     result_dict2 = predictor.predict(document=text2)
     text_formatted1 = {
@@ -69,8 +60,7 @@ def find_coreference_f1s(text1="", text2="", skip_entity=True):
         'document': result_dict2['document'],
         'clusters': result_dict2['clusters']
     }
-    # print("Doc1:",text_formatted1['document'])
-    # print("Doc2:",text_formatted2['document'])
+
     print("Cluster1:",text_formatted1['clusters'])
     print("Cluster2:",text_formatted2['clusters'])
     q_start1 = max(idx for idx, val in enumerate(
@@ -101,13 +91,10 @@ def find_coreference_f1s(text1="", text2="", skip_entity=True):
         cluster_strings = list(map(lambda x: " ".join(
             text_formatted1['document'][x[0]:x[1]+1]), cluster))
         if skip_entity and is_entity(cluster_strings[-1]):
-            # print("Cluster_strings1:", cluster_strings)
             continue
-        # print("Cluster_strings1:",cluster_strings)
         
         set_strings = set([s for s in cluster_strings if s.lower() not in PRONOUNS])
 
-        # print("Set_strings1:",set_strings)
         span_lens = list(map(len, set_strings))
         head_span_idx = None
         for i, span_len in enumerate(span_lens):
@@ -124,12 +111,10 @@ def find_coreference_f1s(text1="", text2="", skip_entity=True):
         cluster_strings = list(map(lambda x: " ".join(
             text_formatted2['document'][x[0]:x[1]+1]), cluster))
         if skip_entity and is_entity(cluster_strings[-1]):
-            # print("Cluster_strings2:", cluster_strings)
             continue
-        # print("Cluster_strings2:",cluster_strings)
+
         set_strings = set([s for s in cluster_strings if s.lower() not in PRONOUNS])
 
-        # print("Set_strings2:",set_strings)
         span_lens = list(map(len, set_strings))
         head_span_idx = None
         for i, span_len in enumerate(span_lens):
@@ -147,13 +132,10 @@ def find_coreference_f1s(text1="", text2="", skip_entity=True):
     resolved_toks2 = resolve(
         text_formatted2['document'], text_formatted2['clusters'])
 
-    print("Nouns1:",nouns1)
-    print("Nouns2:",nouns2)
     f1s = []
 
     def f1(lst1, lst2):
         common = Counter(lst1) & Counter(lst2)
-        # print(common)
         num_same = sum(common.values())
         if num_same == 0:
             f1 = 0
@@ -162,15 +144,9 @@ def find_coreference_f1s(text1="", text2="", skip_entity=True):
             recall = 1.0 * num_same / len(lst1)
             f1 = (2 * precision * recall) / (precision + recall)
         return f1
-    
-    # type = -1 # 0: correct 1: [], [something] 2: [a], [b]
+
     if len(nouns1) == 0 or len(nouns2) == 0 or len(nouns1) != len(nouns2):
         f1s = [0] * max(len(nouns1), len(nouns2))
-        # if len(f1s) != 0:
-        #     type = 1
-        # else:
-        #     type = 0
-
     else:
         short_list, long_list = nouns1, nouns2
         for i in range(len(long_list)):
@@ -180,10 +156,7 @@ def find_coreference_f1s(text1="", text2="", skip_entity=True):
                 if f1_temp > max_f1:
                     max_f1 = f1_temp
             f1s.append(max_f1)
-        # type = 0 if all([f1 > 0 for f1 in f1s]) else 2
-    print("F1s:", f1s)
-    print("Modified gold:", " ".join(resolved_toks1))
-    print("Modified pred:", " ".join(resolved_toks2))
+
     return f1s, " ".join(resolved_toks1), " ".join(resolved_toks2)
 
 if __name__ == "__main__":
@@ -191,7 +164,6 @@ if __name__ == "__main__":
     s2 = "Why did he fight the Dutch? due to their lack of coherent strategy and commitment in fighting Diponegoro's guerrilla warfare. Is there any interesting information? CANNOTANSWER <Q> What is the Pralembrang Jayabaya?"
     s3 = "How many shows did she do after her comeback? On 12 July 2012, Reddy returned to the musical stage at Croce's Jazz Bar in San Diego and for a benefit concert for the arts at St. Genevieve High School Did she perform anywhere after that? Reddy appeared in downtown Los Angeles at the 2017 Women's March on January 21. <Q> What did she sing at the Womens March?"
     s4 = "How many shows did she do after her comeback? CANNOTANSWER Did she perform anywhere after that? Reddy performed at the Paramount nightclub at The Crown & Anchor in Provincetown on 13 October 2013. <Q> What did she sing at the Womens March?"
-    # print(find_coreference_f1s("I love James Bond. <Q> What do you love about him?", "I love Prince Charles. <Q> What do you love about him?"))
     print(find_coreference_f1s(s3,s4))
 
     
