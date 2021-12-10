@@ -1,0 +1,11 @@
+python run_quac_eval.py \
+--type model_alias \
+--output_dir dir_of_model \
+--write_dir dir_to_write_result \
+--predict_file path_to_quac_dev \
+--match_metric f1 \
+--add_background \
+--skip_entity \
+--rewrite \
+--start_i 0 \
+--end_i 1000 \
