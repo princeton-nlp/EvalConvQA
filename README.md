@@ -27,7 +27,7 @@ You can download the human annotation dataset from `data/human_annotation_data.j
 
 Our proposed evaluation protocol, Auto-Rewrite, better demonstrates models' performance in human-model conversations. Please refer to our paper for more details. Following is a figure describing how Auto-Rewrite works.
 
-![Auto-rewrite](figs/rewrite.png)
+![Auto-rewrite](figs/autorewrite.png)
 
 Step 1: Write a model interface following the template `interface.py`.
 
