@@ -29,8 +29,10 @@ Our proposed evaluation protocol, Auto-Rewrite, better demonstrates models' perf
 
 ![Auto-rewrite](figs/autorewrite.png)
 
-Step 1: Write a model interface following the template `interface.py`.
+To use our Auto-Rewite evaluation on your own model, follow the steps:
 
-Step 2: Add model to the evaluation script `run_quac_eval.py`.
+* Step 1: Write a model interface following the template `interface.py`.
 
-Step 3: Run evaluation script. See `run.sh` for reference.
+* Step 2: Add model to the evaluation script `run_quac_eval.py`.
+
+* Step 3: Run evaluation script. See `run.sh` for reference.
