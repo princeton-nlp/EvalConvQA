@@ -7,7 +7,7 @@ In this work, we conduct the first large-scale human evaluation of state-of-the-
 
 We also identify a critical issue with the current automatic evaluation, which pre-collectes human-human conversations and uses ground-truth answers as conversational history (differences between different evaluations are shown in the following figure). By comparison, we find that the automatic evaluation does not always agree with the human evaluation. We propose a new evaluation protocol that is based on predicted history and question rewriting. Our experiments show that the new protocol better reflects real-world performance compared to the original automatic evaluation. We also provide the new evaluation protocol code in the following.
 
-![This is an image](figs/example.png)
+![Different evaluation protocols](figs/example.png)
 
 ## Human Evaluation Dataset
 You can download the human annotation dataset from `data/human_annotation_data.json`. The json file contains one data field `data`, which is a list of conversations. Each conversation contains the following fields: 
@@ -23,7 +23,11 @@ You can download the human annotation dataset from `data/human_annotation_data.j
   * `answerable`: Whether the question is answerable (annotated by our human annotator).
   * `correct`: Whether the model's answer is correct (annotated by our human annotator).
 
-## Evaluation
+## Auto-Rewrite
+
+Our proposed evaluation protocol, Auto-Rewrite, better demonstrates models' performance in human-model conversations. Please refer to our paper for more details. Following is a figure describing how Auto-Rewrite works.
+
+![Auto-rewrite](figs/rewrite.png)
 
 Step 1: Write a model interface following the template `interface.py`.
 
