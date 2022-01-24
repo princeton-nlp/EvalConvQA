@@ -19,7 +19,7 @@ import os
 
 import numpy as np
 
-# import model interface
+# TODO: import model interface
 from interface import QAModel
 
 from run_quac_eval_util import rewrite_with_coreference, filter_with_coreference, write_automatic_eval_result, write_invalid_category, load_context_indep_questions
@@ -162,7 +162,7 @@ def main():
     logger.info("Model directory: %s", args.output_dir)
     
     # initialize model and tokenizer
-    model_class = QAModel()
+    model_class = QAModel() # TODO: change this to your model
     model = model_class(args=args)
     tokenizer = model.tokenizer()
 
