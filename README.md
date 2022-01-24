@@ -33,7 +33,7 @@ To use our evaluation interface on your own model, follow the steps:
 
 * Step 1: Download the [QuAC dataset](https://quac.ai).
 
-* Step 2: Install `allennlp`, `allennlp_models`, `ncr.replace_corefs' through `pip` if you would like to use `Auto-Rewrite`.
+* Step 2: Install `allennlp`, `allennlp_models`, `ncr.replace_corefs` through `pip` if you would like to use `Auto-Rewrite`.
 
 * Step 3: Download the [CANARD dataset](https://sites.google.com/view/qanta/projects/canard) if you would like to use `Auto-Replace`.
 
