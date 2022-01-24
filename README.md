@@ -35,7 +35,7 @@ To use our Auto-Rewite evaluation on your own model, follow the steps:
 
 * Step 2: Add model to the evaluation script `run_quac_eval.py`.
 
-* Step 3: Run evaluation script. See `run.sh` for reference.
+* Step 3: Run evaluation script. See `run.sh` for reference. To reproduce our result, please turn on all flags as demonstrated in `run.sh`.
 
 ## Citation
 
