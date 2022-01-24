@@ -35,7 +35,7 @@ To use our evaluation interface on your own model, follow the steps:
 
 * Step 2: Install `allennlp`, `allennlp_models`, `ncr.replace_corefs` through `pip` if you would like to use `Auto-Rewrite`.
 
-* Step 3: Download the [CANARD dataset](https://sites.google.com/view/qanta/projects/canard) if you would like to use `Auto-Replace`.
+* Step 3: Download the [CANARD dataset](https://sites.google.com/view/qanta/projects/canard) and set `--canard_path` if you would like to use `Auto-Replace`.
 
 * Step 4: Write a model interface following the template `interface.py`. Explanations to each function are provided through in-line comments. Make sure to import all your model dependencies at the top.
 
