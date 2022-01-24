@@ -87,6 +87,11 @@ def main():
         action="store_true",
         help="Whether to rewrite the question with coreference model"
     )
+    parser.add_argument(
+        '--pred',
+        action="store_true",
+        help="Turn on if we only use predicted answer as history without replacing or rewriting invalid questions."
+    )
     # Other parameters
     parser.add_argument("--no_cuda",
                         action='store_true',
@@ -213,7 +218,9 @@ def main():
         for data_idx in range(len(examples)):
             partial_example = examples[data_idx]
             
-            if args.rewrite:
+            if args.pred:
+                invalid = False
+            elif args.rewrite:
                 invalid, modified_question = rewrite_with_coreference(partial_example, background, gold_answers, model.QA_history, history_len=2, match_metric=args.match_metric, add_background=args.add_background, skip_entity=args.skip_entity)
             else:
                 invalid = filter_with_coreference(partial_example, background, gold_answers, model.QA_history, history_len=2, match_metric=args.match_metric, add_background=args.add_background, rm_cannotanswer=args.rm_cannotanswer, skip_entity=args.skip_entity)
