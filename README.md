@@ -23,19 +23,25 @@ You can download the human annotation dataset from `data/human_annotation_data.j
   * `answerable`: Whether the question is answerable (annotated by our human annotator).
   * `correct`: Whether the model's answer is correct (annotated by our human annotator).
 
-## Auto-Rewrite
+## Automatic model evaluation interface
 
-Our proposed evaluation protocol, Auto-Rewrite, better demonstrates models' performance in human-model conversations. Please refer to our paper for more details. Following is a figure describing how Auto-Rewrite works.
+We provide a convenient interface to test model performance on a few evaluation protocols compared in our paper, including `Auto-Pred`, `Auto-Replace` and our proposed evaluation protocol, `Auto-Rewrite`, which better demonstrates models' performance in human-model conversations. Please refer to our paper for more details. Following is a figure describing how Auto-Rewrite works.
 
 ![Auto-rewrite](figs/autorewrite.png)
 
-To use our Auto-Rewite evaluation on your own model, follow the steps:
+To use our evaluation interface on your own model, follow the steps:
 
-* Step 1: Write a model interface following the template `interface.py`.
+* Step 1: Download the [QuAC dataset](https://quac.ai).
 
-* Step 2: Add model to the evaluation script `run_quac_eval.py`.
+* Step 2: Install `allennlp`, `allennlp_models`, `ncr.replace_corefs' through `pip` if you would like to use `Auto-Rewrite`.
 
-* Step 3: Run evaluation script. See `run.sh` for reference. To reproduce our result, please turn on all flags as demonstrated in `run.sh`.
+* Step 3: Download the [CANARD dataset](https://sites.google.com/view/qanta/projects/canard) if you would like to use `Auto-Replace`.
+
+* Step 4: Write a model interface following the template `interface.py`. Explanations to each function are provided through in-line comments. Make sure to import all your model dependencies at the top.
+
+* Step 5: Add the model to the evaluation script `run_quac_eval.py`. Changes that are need to be made are marked with `#TODO`.
+
+* Step 6: Run evaluation script. See `run.sh` for reference. Explanations of all arguments are provided in `run_quac_eval.py`. Make sure to turn on only one of `--pred`, `--rewrite` or `--replace`.
 
 ## Citation
 
