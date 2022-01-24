@@ -36,3 +36,14 @@ To use our Auto-Rewite evaluation on your own model, follow the steps:
 * Step 2: Add model to the evaluation script `run_quac_eval.py`.
 
 * Step 3: Run evaluation script. See `run.sh` for reference.
+
+## Citation
+
+```
+@article{li2021ditch,
+   title={Ditch the Gold Standard: Re-evaluating Conversational Question Answering},
+   author={Li, Huihan and Gao, Tianyu and Goenka, Manan and Chen, Danqi},
+   journal={arXiv preprint arXiv:2112.08812},
+   year={2021}
+}
+```
