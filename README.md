@@ -46,10 +46,10 @@ To use our evaluation interface on your own model, follow the steps:
 ## Citation
 
 ```
-@article{li2021ditch,
+@inproceedings{li2022ditch,
    title={Ditch the Gold Standard: Re-evaluating Conversational Question Answering},
    author={Li, Huihan and Gao, Tianyu and Goenka, Manan and Chen, Danqi},
-   journal={arXiv preprint arXiv:2112.08812},
-   year={2021}
+   booktitle={Association for Computational Linguistics (ACL)},
+   year={2022}
 }
 ```
