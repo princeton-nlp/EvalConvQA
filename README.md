@@ -1,5 +1,5 @@
 # Ditch the Gold Standard: Re-evaluating Conversational Question Answering
-This is the repository for our paper [Ditch the Gold Standard: Re-evaluating Conversational Question Answering](https://arxiv.org/pdf/2112.08812.pdf). 
+This is the repository for our ACL'2022 paper [Ditch the Gold Standard: Re-evaluating Conversational Question Answering](https://arxiv.org/pdf/2112.08812.pdf). 
 
 ## Overview
 
