@@ -165,9 +165,39 @@ def main():
     
     logger.info("***** Loading pre-trained model *****")
     logger.info("Model directory: %s", args.output_dir)
+
+    if args.type == "bert":
+        from models.org.interface import BertOrg
+        model_class = BertOrg
+        if not args.do_lower_case:
+            logger.warn("You probably want to use --do_lower_case when using BERT.")
+    elif args.type == "ham":
+        from models.ham.interface import BertHAM
+        model_class = BertHAM
+        if not args.do_lower_case:
+            logger.warn("You probably want to use --do_lower_case when using BERT.")
+        import tensorflow as tf
+        tf.set_random_seed(args.seed)
+        tf.logging.set_verbosity(tf.logging.INFO)
+        device = None
+    elif args.type == "excord":
+        from models.excord.interface import Excord
+        model_class = Excord
+        if args.do_lower_case:
+            logger.warn("Do not use --do_lower_case when using Excord.")
+        import torch
+        torch.manual_seed(args.seed)
+    elif args.type == "graphflow":
+        from models.graphflow.interface import GraphFlow
+        model_class = GraphFlow
+        if args.do_lower_case:
+            logger.warn(
+                "Do not use --do_lower_case when using GraphFlow")
+    # TODO: Add your own model here
+    else:
+        raise NotImplementedError
     
     # initialize model and tokenizer
-    model_class = QAModel() # TODO: change this to your model
     model = model_class(args=args)
     tokenizer = model.tokenizer()
 
