@@ -47,8 +47,7 @@ def main():
         default=None,
         required=True,
         type=str,
-        help=
-        "The output directory where the model checkpoints to be evaluated is written."
+        help="The output directory where the model checkpoints to be evaluated is written."
     )
     parser.add_argument(
         "--write_dir",
