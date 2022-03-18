@@ -27,12 +27,9 @@ import spacy
 import re
 from collections import Counter
 import string
-# import msgpack
 import numpy as np
 import unicodedata
 
-from transformers import BertTokenizer
-# from coref_resolver import find_coreference_f1s, resolve_coreference
 
 logger = logging.getLogger(__name__)
 

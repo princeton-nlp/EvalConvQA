@@ -1,6 +1,6 @@
-from models.org.modeling import BertForQuAC, RobertaForQuAC
+from models.bert.modeling import BertForQuAC, RobertaForQuAC
 from transformers import AutoTokenizer
-from models.org.run_quac_dataset_utils import read_partial_quac_examples_extern, read_one_quac_example_extern, convert_one_example_to_features, recover_predicted_answer, RawResult
+from models.bert.run_quac_dataset_utils import read_partial_quac_examples_extern, read_one_quac_example_extern, convert_one_example_to_features, recover_predicted_answer, RawResult
 
 import numpy as np
 import torch

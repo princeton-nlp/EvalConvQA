@@ -87,13 +87,10 @@ class ExampleProcessor():
             'annotators': 'tokenize, ssplit, pos, ner',
             'outputFormat': 'json',
             'ssplit.newlineIsSentenceBreak': 'two'})
-        print(paragraph)
         output = {'word': [],
-                # 'lemma': [],
                 'pos': [],
                 'ner': [],
                 'offsets': []}
-        # print(paragraph["sentences"])
         for sent in paragraph['sentences']:
             for token in sent['tokens']:
                 output['word'].append(_str(token['word']))
@@ -105,7 +102,7 @@ class ExampleProcessor():
 
 class GraphFlow():
     def __init__(self, args):
-        self.args = args
+        self.args = vars(args)
         self.device = torch.device("cuda" if torch.cuda.is_available()
                               and not self.args['no_cuda'] else "cpu")
         self.args['device'] = self.device
