@@ -6,7 +6,6 @@ pycorenlp==0.3.0
 pytorch-pretrained-bert==0.6.2
 sentencepiece==0.1.96
 spacy==3.0.6
-tensorflow-gpu==1.15.0
 torch==1.8.1
 torchtext==0.9.1
 torchvision==0.9.1
