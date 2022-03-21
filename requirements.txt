@@ -1,7 +1,7 @@
 allennlp==2.5.0
 allennlp-models==2.5.0
 en-core-web-sm==3.0.0
-nltk==3.6.2
+nltk==3.6.6
 pycorenlp==0.3.0
 pytorch-pretrained-bert==0.6.2
 sentencepiece==0.1.96
