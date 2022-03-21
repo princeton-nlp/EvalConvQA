@@ -186,23 +186,15 @@ def main():
         help=
         "If true, all of the warnings related to data processing will be printed. "
         "A number of warnings are expected for a normal QuAC evaluation.")
-
-
-    # Excord and Bert specific
-    parser.add_argument(
-        "--model_name_or_path",
-        default=None,
-        type=str,
-        help="Bert pre-trained model selected in the list: bert-base-uncased, roberta-base")
     
     # Bert specific
     parser.add_argument('--rationale_beta', type=float, default=0,
                         help="Multiplier for rationale loss.")
 
     # HAM specific args
-    parser.add_argument('--bert_config_file', type=str, default="/n/fs/nlp-huihanl/conversational-qa/local/Bert4QuAC/other/wwm_uncased_L-24_H-1024_A-16/bert_config.json", help="bert_config.json for bert-large-uncased")
-    parser.add_argument('--vocab_file', type=str, default="/n/fs/nlp-huihanl/conversational-qa/local/Bert4QuAC/other/attentive_history_selection/model/vocab.txt", help="downloadable from https://worksheets.codalab.org/worksheets/0xb92c7222574046eea830c26cd414faec")
-    parser.add_argument('--init_checkpoint', type=str, default="/n/fs/nlp-huihanl/conversational-qa/local/Bert4QuAC/other/attentive_history_selection/model/model_52000.ckpt", help="downloadable from https://worksheets.codalab.org/worksheets/0xb92c7222574046eea830c26cd414faec")
+    parser.add_argument('--bert_config_file', type=str, default="SOME_PATH/wwm_uncased_L-24_H-1024_A-16/bert_config.json", help="bert_config.json for bert-large-uncased")
+    parser.add_argument('--vocab_file', type=str, default="SOME_PATH/vocab.txt", help="downloadable from https://worksheets.codalab.org/worksheets/0xb92c7222574046eea830c26cd414faec")
+    parser.add_argument('--init_checkpoint', type=str, default="SOME_PATH/model_52000.ckpt", help="downloadable from https://worksheets.codalab.org/worksheets/0xb92c7222574046eea830c26cd414faec")
     parser.add_argument('--train_batch_size', type=int, default=16, help="Set to 16 to match training batch size for the original model")
     parser.add_argument('--predict_batch_size', type=int, default=16, help="Set to 16 to match training batch size for the original model")
     parser.add_argument('--max_history_turns', type=int, default=11)
@@ -591,6 +583,7 @@ def main():
         raise ValueError(
             "Output directory {} does not contain model checkpoint.".format(args.output_dir))
     
+    args.model_name_or_path=args.output_dir
     logger.info("***** Loading pre-trained model *****")
     logger.info("Model directory: %s", args.output_dir)
     

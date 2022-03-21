@@ -297,6 +297,344 @@ def read_partial_quac_examples_extern(input_file):
         articles.append(a)
     return articles
 
+def read_quac_train_examples(input_file, tokenizer, history_len=2, add_answer=True, add_QA_tag=False):
+    """Read the preprocessed QuAC dataset into a list of QuACExample."""
+    def is_whitespace(c):
+            if c == " " or c == "\t" or c == "\r" or c == "\n" or ord(c) == 0x202F:
+                return True
+            return False
+
+    def find_span(offsets, start, end):
+        start_index = -1
+        end_index = -1
+        for i, offset in enumerate(offsets):
+            if (start_index < 0) or (start >= offset[0]):
+                start_index = i
+            if (end_index < 0) and (end <= offset[1]):
+                end_index = i
+        return (start_index, end_index)
+
+    def normalize_text(text):
+        return unicodedata.normalize('NFD', text)
+
+    def space_extend(matchobj):
+        return ' ' + matchobj.group(0) + ' '
+
+    def pre_proc(text):
+        text = re.sub(
+            u'-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|%|\[|\]|:|\(|\)|/|\t',
+            space_extend, text)
+        text = text.strip(' \n')
+        text = re.sub('\s+', ' ', text)
+        return text
+    
+    def get_context_span(context, context_token):
+        p_str = 0
+        p_token = 0
+        t_span = []
+        while p_str < len(context):
+            if re.match('\s', context[p_str]):
+                p_str += 1
+                continue
+
+            token = context_token[p_token]
+            token_len = len(token)
+            if context[p_str:p_str + token_len] != token:
+                logger.info("Something wrong with get_context_span()")
+                return []
+            t_span.append((p_str, p_str + token_len))
+
+            p_str += token_len
+            p_token += 1
+        return t_span
+
+    """Main Stream"""
+    nlp = spacy.load('en_core_web_sm')
+
+    with open(input_file, encoding="utf-8") as f:
+        data = json.load(f)["data"]
+
+    examples = []
+    for article in data:
+        section_title = article['section_title']
+        background = article['background']
+
+        paragraph = article['paragraphs'][0]
+        context_str = paragraph['context']
+        context_nlp = nlp(pre_proc(context_str))
+        context_tok = [normalize_text(w.text) for w in context_nlp]
+        context_span = get_context_span(context_str, context_tok)
+
+        for index, qa in enumerate(paragraph['qas']):
+            qas_id = qa['id']
+            question = qa['question']
+            gold_answer = qa['answers'][0]
+            answer_text = gold_answer['text']
+
+            # generate question_text as [Q,A,Q,A...]
+            long_questions = []
+            for j in range(max(index-history_len, 0), index+1):
+                long_question = ' '
+
+                long_question += (' <Q> ' if add_QA_tag else
+                                    ' ') + paragraph['qas'][j]['question']
+                if add_answer:
+                    if j < index:
+                        long_question += (' <A> ' if add_QA_tag else
+                                            ' ') + paragraph['qas'][j]['answers'][0]['text'] + ' ' + tokenizer.sep_token
+                else:
+                    long_question += ' ' + tokenizer.sep_token
+                long_question = long_question.strip()
+                long_questions.append(long_question)
+
+            # findstart and end character positions
+            start = int(gold_answer['answer_start'])
+            # this matches the space after the token
+            end = start+len(answer_text)
+            # generate rational
+            chosen_text = context_str[start:end].lower()
+            while len(chosen_text) > 0 and is_whitespace(chosen_text[0]):
+                chosen_text = chosen_text[1:]
+                start += 1
+            while len(chosen_text) > 0 and is_whitespace(chosen_text[-1]):
+                chosen_text = chosen_text[:-1]
+                end -= 1
+            r_start, r_end = find_span(context_span, start, end)
+            # answer span is the same as rational span
+            start_position = r_start
+            end_position = r_end
+
+            example = QuacExample(
+            qas_id=qas_id,
+            background=background,
+            question_text=long_questions,
+            doc_tokens=context_tok,
+            orig_answer_text=answer_text,
+            start_position=start_position,
+            end_position=end_position,
+            rational_start_position=r_start,
+            rational_end_position=r_end,
+            additional_answers=None,
+            )
+            examples.append(example)
+
+    return examples
+
+def convert_train_examples_to_features(examples, tokenizer, max_seq_length,
+                                 doc_stride, max_query_length):
+    """Loads a data file into a list of `InputBatch`s."""
+
+    unique_id = 1000000000
+
+    features = []
+    for (example_index,
+         example) in enumerate(tqdm(examples, desc="Generating features")):
+        # query tokens as [Q,A,Q,A...]
+        query_tokens = []
+        for qa in example.question_text:
+            query_tokens.extend(tokenizer.tokenize(qa))
+        
+        # query tokens as [Q,Q,...,A,A...]
+        # query_tokens = tokenizer.tokenize(example.question_text)
+        yesno_option = example.yesno_option
+        cls_idx = 3 # not one of below
+        # if example.orig_answer_text == 'yes':
+        #     cls_idx = 0  # yes
+        # elif example.orig_answer_text == 'no':
+        #     cls_idx = 1  # no
+        if example.orig_answer_text == 'CANNOTANSWER':
+            cls_idx = 2  # CANNOTANSWER
+
+        if len(query_tokens) > max_query_length:  # keep tail, not head
+            query_tokens.reverse()
+            query_tokens = query_tokens[0:max_query_length]
+            query_tokens.reverse()
+
+        tok_to_orig_index = []
+        orig_to_tok_index = []
+        all_doc_tokens = []
+        for (i, token) in enumerate(example.doc_tokens):
+            orig_to_tok_index.append(len(all_doc_tokens))
+            sub_tokens = tokenizer.tokenize(token)
+            for sub_token in sub_tokens:
+                tok_to_orig_index.append(i)
+                all_doc_tokens.append(sub_token)
+
+        tok_start_position = None
+        tok_end_position = None
+        tok_r_start_position, tok_r_end_position = None, None
+
+        # rational part
+        tok_r_start_position = orig_to_tok_index[
+            example.rational_start_position]
+        if example.rational_end_position < len(example.doc_tokens) - 1:
+            tok_r_end_position = orig_to_tok_index[
+                example.rational_end_position + 1] - 1
+        else:
+            tok_r_end_position = len(all_doc_tokens) - 1
+        # rational part end
+
+        # if tok_r_end_position is None:
+        #     print('DEBUG')
+
+        if cls_idx < 3:
+            tok_start_position, tok_end_position = 0, 0
+        else:
+            tok_start_position = orig_to_tok_index[example.start_position]
+            if example.end_position < len(example.doc_tokens) - 1:
+                tok_end_position = orig_to_tok_index[example.end_position +
+                                                     1] - 1
+            else:
+                tok_end_position = len(all_doc_tokens) - 1
+            (tok_start_position, tok_end_position) = _improve_answer_span(
+                all_doc_tokens, tok_start_position, tok_end_position,
+                tokenizer, example.orig_answer_text)
+        # The -3 accounts for [CLS], [SEP] and [SEP]
+        max_tokens_for_doc = max_seq_length - len(query_tokens) - 3
+
+        # We can have documents that are longer than the maximum sequence length.
+        # To deal with this we do a sliding window approach, where we take chunks
+        # of the up to our max length with a stride of `doc_stride`.
+        _DocSpan = collections.namedtuple(  # pylint: disable=invalid-name
+            "DocSpan", ["start", "length"])
+        doc_spans = []
+        start_offset = 0
+        while start_offset < len(all_doc_tokens):
+            length = len(all_doc_tokens) - start_offset
+            if length > max_tokens_for_doc:
+                length = max_tokens_for_doc
+            doc_spans.append(_DocSpan(start=start_offset, length=length))
+            if start_offset + length == len(all_doc_tokens):
+                break
+            start_offset += min(length, doc_stride)
+
+        for (doc_span_index, doc_span) in enumerate(doc_spans):
+            slice_cls_idx = cls_idx
+            tokens = []
+            token_to_orig_map = {}
+            token_is_max_context = {}
+            segment_ids = []
+
+            tokens.append(tokenizer.cls_token)
+            segment_ids.append(0)
+            for token in query_tokens:
+                tokens.append(token)
+                segment_ids.append(0)
+                # if token == '[SEP]':
+                #     cur_id += 1
+            tokens.append(tokenizer.sep_token)
+            segment_ids.append(0)
+
+            for i in range(doc_span.length):
+                split_token_index = doc_span.start + i
+                token_to_orig_map[len(
+                    tokens)] = tok_to_orig_index[split_token_index]
+
+                is_max_context = _check_is_max_context(doc_spans,
+                                                       doc_span_index,
+                                                       split_token_index)
+                token_is_max_context[len(tokens)] = is_max_context
+                tokens.append(all_doc_tokens[split_token_index])
+                segment_ids.append(1)
+
+            tokens.append(tokenizer.sep_token)
+            segment_ids.append(1)
+
+            input_ids = tokenizer.convert_tokens_to_ids(tokens)
+
+            # The mask has 1 for real tokens and 0 for padding tokens. Only real
+            # tokens are attended to.
+            input_mask = [1] * len(input_ids)
+
+            # Zero-pad up to the sequence length.
+            while len(input_ids) < max_seq_length:
+                input_ids.append(tokenizer.pad_token_id)
+                input_mask.append(0)
+                segment_ids.append(0)
+
+            assert len(input_ids) == max_seq_length
+            assert len(input_mask) == max_seq_length
+            assert len(segment_ids) == max_seq_length
+
+            start_position = None
+            end_position = None
+            rational_start_position = None
+            rational_end_position = None
+
+            # rational_part
+            doc_start = doc_span.start
+            doc_end = doc_span.start + doc_span.length - 1
+            out_of_span = False
+            if example.rational_start_position == -1 or not (
+                    tok_r_start_position >= doc_start
+                    and tok_r_end_position <= doc_end):
+                out_of_span = True
+            if out_of_span:
+                rational_start_position = 0
+                rational_end_position = 0
+            else:
+                doc_offset = len(query_tokens) + 2
+                rational_start_position = tok_r_start_position - doc_start + doc_offset
+                rational_end_position = tok_r_end_position - doc_start + doc_offset
+            # rational_part_end
+
+            rational_mask = [0] * len(input_ids)
+            if not out_of_span:
+                rational_mask[rational_start_position:rational_end_position +
+                              1] = [1] * (rational_end_position -
+                                          rational_start_position + 1)
+
+            if cls_idx >= 3:
+                # For training, if our document chunk does not contain an annotation
+                # we throw it out, since there is nothing to predict.
+                doc_start = doc_span.start
+                doc_end = doc_span.start + doc_span.length - 1
+                out_of_span = False
+                if not (tok_start_position >= doc_start
+                        and tok_end_position <= doc_end):
+                    out_of_span = True
+                if out_of_span:
+                    start_position = 0
+                    end_position = 0
+                    slice_cls_idx = 2
+                else:
+                    doc_offset = len(query_tokens) + 2
+                    start_position = tok_start_position - doc_start + doc_offset
+                    end_position = tok_end_position - doc_start + doc_offset
+            else:
+                start_position = 0
+                end_position = 0
+
+                if slice_cls_idx >= 3:
+                    answer_text = " ".join(
+                        tokens[start_position:(end_position + 1)])
+                else:
+                    tmp = ['yes', 'no', 'CANNOTANSWER']
+                    answer_text = tmp[slice_cls_idx]
+
+                rational_text = " ".join(
+                    tokens[rational_start_position:(rational_end_position +
+                                                    1)])
+
+            features.append(
+                InputFeatures(unique_id=unique_id,
+                              example_index=example_index,
+                              doc_span_index=doc_span_index,
+                              tokens=tokens,
+                              token_to_orig_map=token_to_orig_map,
+                              token_is_max_context=token_is_max_context,
+                              input_ids=input_ids,
+                              input_mask=input_mask,
+                              segment_ids=segment_ids,
+                              start_position=start_position,
+                              end_position=end_position,
+                              rational_mask=rational_mask,
+                              yesno_option=yesno_option,
+                              cls_idx=slice_cls_idx))
+            unique_id += 1
+
+    return features
+
 def convert_one_example_to_features(example, unique_id, example_index, tokenizer, max_seq_length, doc_stride, max_query_length):
     # unique id for all features
     logger.info("*** Generating feature for example index %d ***" % example_index)
