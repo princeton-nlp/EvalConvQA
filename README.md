@@ -1,6 +1,21 @@
 # Ditch the Gold Standard: Re-evaluating Conversational Question Answering
 This is the repository for our ACL'2022 paper [Ditch the Gold Standard: Re-evaluating Conversational Question Answering](https://arxiv.org/pdf/2112.08812.pdf). 
 
+## Quick links
+* [Overview](#Overview)
+* [Human Evaluation Dataset](#Human-Evaluation-Dataset)
+* [Automatic model evaluation interface](#Automatic-model-evaluation-interface)
+* [Setup](#Setup)
+  * [Install dependencies](#Install-dependencies)
+  * [Download the datasets](#Download-the-datasets)
+* [Evaluating existing models](#Evaluating-existing-models)
+  * [BERT](#BERT)
+  * [GraphFlow](#GraphFlow)
+  * [HAM](#HAM)
+  * [ExCorD](#ExCorD)
+* [Evaluating your own model](#Evaluating-your-own-model)
+* [Citation](#Citation)
+
 ## Overview
 
 In this work, we conduct the first large-scale human evaluation of state-of-the-art conversational QA systems. In our evaluation, human annotators chat with conversational QA models about passages from the [QuAC](https://quac.ai) development set, and after that the annotators judge the correctness of model answers. We release the human annotated dataset in the following section. 
