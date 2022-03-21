@@ -186,6 +186,9 @@ python run_quac_eval.py \
   --end_i ${index_of_last_passage_to_eval_exclusive} \
 ```
 
+## Evaluating your own model
+One can follow our existing implementations for the four models to implement evaluation for their own models. To do so, please add a directory under `models` and write a customized model class following the template `interface.py` and our example implementations.
+
 ## Citation
 
 ```
