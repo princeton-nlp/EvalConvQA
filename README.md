@@ -81,7 +81,7 @@ We provide a convenient interface to test model performance on a few evaluation 
 ### Install dependencies
 
 Please install all dependency packages using the following command:
-```
+```bash
 pip install -r requirements.txt
 ```
 
@@ -95,7 +95,7 @@ We provide our implementations for the four models that we used in our paper: BE
 
 ### BERT
 We implemented and trained our own BERT model.
-```
+```bash
 # Run Training
 python run_quac_train.py \
   --type bert \
@@ -134,7 +134,7 @@ python run_quac_eval.py \
 
 ### GraphFlow
 We did not find an uploaded model checkpoint so we trained our own using [their training script](https://github.com/hugochan/GraphFlow).
-```
+```bash
 
 # Download Stanford CoreNLP package
 wget https://nlp.stanford.edu/software/stanford-corenlp-latest.zip
@@ -178,7 +178,7 @@ python run_quac_eval.py \
 ### HAM
 The orgininal model checkpoint can be downloaded from [CodaLab](https://worksheets.codalab.org/rest/bundles/0x5c08cb0fb90c4afd8a2811bb63023cce/contents/blob/)
 
-```
+```bash
 # Run Evaluation (Auto-Rewrite as example)
 python run_quac_eval.py \
   --type ham \
@@ -215,7 +215,7 @@ python run_quac_eval.py \
 ### ExCorD
 The original model checkpoint can be downloaded from [their repo](https://drive.google.com/file/d/1Xf0-XUvGi7jgiAAdA5BQLk7p5ikc_wOl/view?usp=sharing)
 
-```
+```bash
 # Run Evaluation (Auto-Rewrite as example)
 python run_quac_eval.py \
   --type excord \
@@ -238,7 +238,7 @@ One can follow our existing implementations for the four models to implement eva
 
 ## Citation
 
-```
+```bibtex
 @inproceedings{li2022ditch,
    title={Ditch the Gold Standard: Re-evaluating Conversational Question Answering},
    author={Li, Huihan and Gao, Tianyu and Goenka, Manan and Chen, Danqi},
