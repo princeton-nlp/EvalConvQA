@@ -25,18 +25,50 @@ We also identify a critical issue with the current automatic evaluation, which p
 ![Different evaluation protocols](figs/example.png)
 
 ## Human Evaluation Dataset
-You can download the human annotation dataset from `data/human_annotation_data.json`. The json file contains one data field `data`, which is a list of conversations. Each conversation contains the following fields: 
+You can download the human annotation dataset from `data/human_annotation_data.json`. The json file is structured as follows:
 
-* `model_name`: The model evaluated. One of `bert4quac`, `graphflow`, `ham`, `excord`.
-* `context`: The passage used in this conversation.
-* `dialog_id`: The ID from the original QuAC dataset.
-* `qas`: The conversation, which contains a list of QA pairs. Each QA pair has the following fields:
-  * `turn_id`: The number of turn. 
-  * `question`: The question from the human annotator.
-  * `answer`: The answer from the model.
-  * `valid`: Whether the question is valid (annotated by our human annotator).
-  * `answerable`: Whether the question is answerable (annotated by our human annotator).
-  * `correct`: Whether the model's answer is correct (annotated by our human annotator).
+```
+{"data": 
+      [{
+       # The model evaluated. One of `bert4quac`, `graphflow`, `ham`, `excord`
+       "model_name": "graphflow",
+
+       # The passage used in this conversation.
+       "context": "Azaria wrote and directed the 2004 short film Nobody's Perfect, ...",
+
+       # The ID from the original QuAC dataset.
+       "dialog_id": "C_f0555dd820d84564a189474bbfffd4a1_1_0",
+
+       # The conversation, which contains a list of QA pairs.
+       "qas": [{
+
+         # The number of the turn
+         "turn_id": 0,
+
+         # The question from the human annotator
+         "question": "What is some voice work he's done?",
+
+         # The answer from the model
+         "answer": "Azaria wrote and directed the 2004 short film Nobody's Perfect,",
+
+         # Whether the question is valid (annotated by our human annotator)
+         "valid": "y",
+
+         # Whether the question is answerable (annotated by our human annotator)
+         "answerable": "y",
+
+         # Whether the model's answer is correct (annotated by our human annotator)
+         "correct": "y",
+         
+         # Human annotator selects an answer, ONLY IF they marked the answer as incorrect
+         "gold_anno": ["Azaria wrote and directed ..."]
+         },
+         ...
+       ]
+      },
+      ...
+]
+```
 
 ## Automatic model evaluation interface
 
