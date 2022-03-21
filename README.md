@@ -88,7 +88,6 @@ python run_quac_eval.py \
 ### GraphFlow
 We did not find an uploaded model checkpoint so we trained our own using [their training script](https://github.com/hugochan/GraphFlow).
 ```
-# Run Evaluation (Auto-Rewrite as example)
 
 # Download Stanford CoreNLP package
 wget https://nlp.stanford.edu/software/stanford-corenlp-latest.zip
@@ -98,6 +97,7 @@ rm -f stanford-corenlp-latest.zip
 # Start StanfordCoreNLP server
 java -mx4g -cp "${directory_to_standford_corenlp_package}" edu.stanford.nlp.pipeline.StanfordCoreNLPServer -port 9000 &
 
+# Run Evaluation (Auto-Rewrite as example)
 python run_quac_eval.py \
     --type graphflow \
     --predict_file ${path-to-annotated-dev-json-file} \
