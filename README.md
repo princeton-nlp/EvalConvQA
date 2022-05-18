@@ -240,9 +240,14 @@ One can follow our existing implementations for the four models to implement eva
 
 ```bibtex
 @inproceedings{li2022ditch,
-   title={Ditch the Gold Standard: Re-evaluating Conversational Question Answering},
-   author={Li, Huihan and Gao, Tianyu and Goenka, Manan and Chen, Danqi},
-   booktitle={Association for Computational Linguistics (ACL)},
-   year={2022}
+    title = "Ditch the Gold Standard: Re-evaluating Conversational Question Answering",
+    author = "Li, Huihan  and
+      Gao, Tianyu  and
+      Goenka, Manan  and
+      Chen, Danqi",
+    booktitle = "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    year = "2022",
+    url = "https://aclanthology.org/2022.acl-long.555",
+    pages = "8074--8085",
 }
 ```
