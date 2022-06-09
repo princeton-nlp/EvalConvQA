@@ -1,5 +1,5 @@
 # Ditch the Gold Standard: Re-evaluating Conversational Question Answering
-This is the repository for our ACL'2022 paper [Ditch the Gold Standard: Re-evaluating Conversational Question Answering](https://arxiv.org/pdf/2112.08812.pdf). 
+This is the repository for our ACL'2022 paper [Ditch the Gold Standard: Re-evaluating Conversational Question Answering](https://arxiv.org/pdf/2112.08812.pdf). The slides for our ACL presentation can be found [here](https://github.com/princeton-nlp/EvalConvQA/blob/main/ACL%202022%20Video%20talk.pdf).
 
 ## Quick links
 * [Overview](#Overview)
